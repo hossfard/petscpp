@@ -30,8 +30,6 @@ set(petscpp_source_files
   Matrix.h
   MatrixPartitioning.cpp
   MatrixPartitioning.h
-  MatrixProxy.cpp
-  MatrixProxy.h
   Utility.h
   Vector.cpp
   Vector.h

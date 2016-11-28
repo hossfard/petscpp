@@ -215,18 +215,6 @@ startingRow() const{
 
 Matrix&
 MatrixSlice::
-operator=(OmMatrix_d<double> const& values){
-  MatSetValues(matrix_.mat_,
-               values.rowCount(), &rowIndices_[0],
-               values.colCount(), &colIndices_[0],
-               &values.data()[0],
-               INSERT_VALUES);
-  return matrix_;
-}
-
-
-Matrix&
-MatrixSlice::
 operator=(Eigen::MatrixXd const& values){
 
   bool readjustOrientation = false;
@@ -290,10 +278,10 @@ petscMatrix() const{
 }
 
 
-OmMatrix_d<double> 
+Eigen::MatrixXd
 MatrixSlice::
 toMatrix() const{
-  OmMatrix_d<double> matrix(rowIndices_.size(), colIndices_.size());
+  Eigen::MatrixXd matrix(rowIndices_.size(), colIndices_.size());
 
   MatGetValues(petscMatrix(),
                // rowIndices_.size(), rowIndices_.begin(),
@@ -306,12 +294,11 @@ toMatrix() const{
 }
 
 
-
-// std::ostream&
-// operator<<(std::ostream& stream, MatrixSlice const& slice){
-//   stream << slice.toMatrix() << "\n";
-//   return stream;
-// }
+std::ostream&
+operator<<(std::ostream& stream, MatrixSlice const& slice){
+  stream << slice.toMatrix() << "\n";
+  return stream;
+}
 
 
 // -----------------------------------------------------------------

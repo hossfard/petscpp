@@ -300,10 +300,10 @@ operator+=(Eigen::VectorXd const& vals){
 }
 
 
-OmMatrix_d<double>
+Eigen::VectorXd
 VectorSlice::
 values() const{
-  OmMatrix_d<double> vals(indices_.size(), 1);
+  Eigen::VectorXd vals(indices_.size());
   VecGetValues(vec_.vector_, indices_.size(), &indices_[0], &vals.data()[0]);
   return vals;
 }
@@ -317,10 +317,10 @@ VectorSliceConst(Vector const& vec, std::vector<int> const& index)
 { }
 
 
-OmMatrix_d<double>
+Eigen::VectorXd
 VectorSliceConst::
 values() const{
-  OmMatrix_d<double> vals(indices_.size(), 1);
+  Eigen::VectorXd vals(indices_.size());
   VecGetValues(vec_.vector_, indices_.size(), &indices_[0], &vals.data()[0]);
   return vals;
 }

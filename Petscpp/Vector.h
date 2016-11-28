@@ -1,7 +1,6 @@
 #ifndef PVECTOR_H_
 #define PVECTOR_H_
 
-#include "MatrixProxy.h"
 #include <Eigen/Dense>
 #include "IndexSet.h"
 #include <vector>
@@ -55,7 +54,7 @@ namespace Petscpp{
     Vector& operator=(double val);
     Vector& operator+=(Eigen::VectorXd const& vec);
 
-    OmMatrix_d<double> values() const;
+    Eigen::VectorXd values() const;
 
   private:
     Vector &vec_;
@@ -75,7 +74,7 @@ namespace Petscpp{
       indices_.insert(indices_.end(), index.begin(), index.end());
     }
 
-    OmMatrix_d<double> values() const;
+    Eigen::VectorXd values() const;
 
   private:
     Vector const& vec_;

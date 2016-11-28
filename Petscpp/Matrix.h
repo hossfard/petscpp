@@ -4,8 +4,8 @@
 #include <type_traits>
 #include <initializer_list>
 #include <ostream>
-#include "MatrixProxy.h"
 #include <Eigen/Dense>
+#include <vector>
 
 struct _p_Mat;
 typedef struct _p_Mat* Mat;
@@ -26,16 +26,14 @@ namespace Petscpp{
     
     template <size_t M, size_t N>
     MatrixSlice(Matrix &matrix,
-                 std::array<int,M> const& rowIndices,
-                 std::array<int,N> const& colIndices)
+                std::array<int,M> const& rowIndices,
+                std::array<int,N> const& colIndices)
       : matrix_(matrix)
     {
       rowIndices_.insert(rowIndices_.end(), rowIndices.begin(), rowIndices.end());
       colIndices_.insert(colIndices_.end(), colIndices.begin(), colIndices.end());
     }
 
-    // TODO: careful with row-major/col-major
-    Matrix& operator=(OmMatrix_d<double> const& values);
 
     /*! Assign selected rows and indices to specified matrix
      *
@@ -65,7 +63,7 @@ namespace Petscpp{
     Matrix& operator=(double val);
 
     // Experimental
-    OmMatrix_d<double> toMatrix() const;
+    Eigen::MatrixXd toMatrix() const;
 
     // Number of rows of sliced matrix
     size_t rowCount() const { return rowIndices_.size(); }
@@ -220,10 +218,7 @@ namespace Petscpp{
   };
 
 
-  inline std::ostream& operator<<(std::ostream& stream, MatrixSlice const& slice){
-    stream << slice.toMatrix() << "\n";
-    return stream;
-  }
+  std::ostream& operator<<(std::ostream& stream, MatrixSlice const& slice);
 
 
 } // namespace Petscpp
