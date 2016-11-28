@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include "Petscpp.h"
+#include "petscmat.h"
 #include <iostream>
 
 using namespace Petscpp;

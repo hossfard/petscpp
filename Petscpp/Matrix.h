@@ -4,10 +4,11 @@
 #include <type_traits>
 #include <initializer_list>
 #include <ostream>
-#include "petscmat.h"
 #include "MatrixProxy.h"
 #include <Eigen/Dense>
 
+struct _p_Mat;
+typedef struct _p_Mat* Mat;
 
 namespace Petscpp{
 
@@ -17,8 +18,8 @@ namespace Petscpp{
   {
   public:
     MatrixSlice(Matrix &matrix,
-                 std::vector<int> const& rowIndices,
-                 std::vector<int> const& colIndices)
+                std::vector<int> const& rowIndices,
+                std::vector<int> const& colIndices)
       : matrix_(matrix), rowIndices_(rowIndices), colIndices_(colIndices)
     { }
     // TODO: Remove redundant entries from specified indicies
@@ -151,7 +152,7 @@ namespace Petscpp{
      * Convenience function
      */
     MatrixSlice operator()(std::initializer_list<int> const& rows,
-                            std::initializer_list<int> const& cols);
+                           std::initializer_list<int> const& cols);
 
     /* Return a proxy class for accessing a portions of the matrix
      *
@@ -160,7 +161,7 @@ namespace Petscpp{
      */
     template <size_t M, size_t N>
     MatrixSlice operator()(std::array<int, M> const& rows,
-                            std::array<int, N> const& cols){
+                           std::array<int, N> const& cols){
       return MatrixSlice(*this, rows, cols);
     }
 

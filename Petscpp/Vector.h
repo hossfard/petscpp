@@ -1,12 +1,13 @@
 #ifndef PVECTOR_H_
 #define PVECTOR_H_
 
-#include "petscvec.h"
 #include "MatrixProxy.h"
 #include <Eigen/Dense>
 #include "IndexSet.h"
 #include <vector>
 
+struct _p_Vec;
+typedef struct _p_Vec* Vec;
 
 namespace Petscpp{
 

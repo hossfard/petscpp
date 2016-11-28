@@ -1,5 +1,6 @@
 #include "Vector.h"
 #include "IndexSet.h"
+#include "petscvec.h"
 #include <fstream>
 #include <iostream>
 
