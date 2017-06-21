@@ -7,14 +7,13 @@ using namespace Petscpp;
 
 constexpr bool DecorateCtors = false;
 
-
 Matrix::
 Matrix(){
   if (DecorateCtors) std::cout << "Matrix()" << std::endl;
 
-  int m = 10;
-  int n = 10;
-  int nz = 5;
+  int m = 0;
+  int n = 0;
+  int nz = 1;
 
   MatCreate(PETSC_COMM_WORLD, &mat_);
   MatSetSizes(mat_, m, n, PETSC_DETERMINE, PETSC_DETERMINE);

@@ -6,9 +6,13 @@
 #include <iostream>
 
 
-TEST(Matrix, SizeCtor){
+TEST(Matrix, Ctor){
   using namespace Petscpp;
-  Matrix mat(10,10);
+  // Default ctor
+  Matrix m2;
+
+  // Initiale size
+  Matrix m1(10,10);
 }
 
 
