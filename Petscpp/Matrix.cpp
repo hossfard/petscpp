@@ -30,12 +30,12 @@ Matrix(){
 
 
 Matrix::
-Matrix(int m, int n, bool globalSizes /* = true */, int nzCount /*= 0*/){
+Matrix(int m, int n, bool globalSizes /* = true */, int nzCount /*= -1*/){
   if (DecorateCtors) std::cout << "Matrix(m,n)" << std::endl;
 
   // If nz is specified as zero, default to 10% of the max(m,n) non-zero
   int nz = nzCount;
-  if (nzCount == 0)
+  if (nzCount < 0)
     nz = std::ceil(std::max(m,n)*0.1);
 
   MatCreate(PETSC_COMM_WORLD, &mat_);
@@ -63,6 +63,8 @@ Matrix(int m, int n, bool globalSizes /* = true */, int nzCount /*= 0*/){
 
   // allocate new space as needed
   MatSetOption(mat_, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
+
+  assemble();
 }
 
 

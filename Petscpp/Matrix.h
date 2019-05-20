@@ -114,9 +114,12 @@ namespace Petscpp{
      * \param M number of rows
      * \param N number of columns
      * \param nzCount number of non-zero entries per row. Defaults to
-     *           10% of the max(M,N) if specified as zero
+     *           10% of the max(M,N) if specified as negative
+     *
+     * Note: if nzCount is not expicitely specified, the instance will
+     * not be able to represent dense matrices
      */
-    Matrix(int M, int N, bool globalSizes = true, int nzCount = 0);
+    Matrix(int M, int N, bool globalSizes = true, int nzCount = -1);
 
     Matrix& operator=(Matrix const& other);
     Matrix& operator=(Matrix && other);
