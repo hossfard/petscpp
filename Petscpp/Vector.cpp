@@ -337,6 +337,13 @@ addTo(Vector& other){
 }
 
 
+double
+VectorScaleOp::
+scaleFactor() const{
+  return alpha_;
+}
+
+
 Vec
 VectorScaleOp::
 duplicateVec() const{
@@ -352,6 +359,13 @@ VectorScaleOp::
 operator*=(double alpha){
   alpha_ *= alpha; 
   return *this;
+}
+
+
+Vec
+VectorScaleOp::
+petscVec() const{
+  return vec_.petscVec();
 }
 
 

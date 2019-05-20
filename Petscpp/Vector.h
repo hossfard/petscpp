@@ -13,6 +13,8 @@ namespace Petscpp{
   class Vector;
   template <typename lhs, typename rhs> class VectorAddOp;
 
+  template <typename LHS> class MatVecMultOp;
+
 
   /*! Proxy class for lazy arithmetic operations on Vector
    *
@@ -131,9 +133,15 @@ namespace Petscpp{
     // Evaluate the operator and return a new Vector
     Vector eval() const;
 
+    Vec petscVec() const;
+
     friend VectorScaleOp operator*(VectorScaleOp s, double alpha);
     friend VectorScaleOp operator/(VectorScaleOp s, double alpha);
+    template <typename L> friend class MatVecMultOp;
+
   private:
+    double scaleFactor() const;
+
     Vector &vec_;
     double alpha_;
   };
@@ -281,6 +289,9 @@ namespace Petscpp{
       vector_ = op.duplicateVec();
       noAlias() += op;
     }
+
+    template <typename LHS>
+    Vector(MatVecMultOp<LHS> const& op);
 
     Vector(VectorScaleOp const& op);
 
@@ -531,12 +542,12 @@ namespace Petscpp{
       return const_iterator(vector_, nullptr);
     }
 
+    // Duplicate internal vector properties (used by proxies)
+    Vec duplicateVec() const;
+
   private:
     // Add current vector to other (used by proxies)
     void addTo(Vector &vec);
-
-    // Duplicate internal vector properties (used by proxies)
-    Vec duplicateVec() const;
 
     Vec vector_;
     mutable int iteratorCount_;

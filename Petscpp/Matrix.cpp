@@ -71,7 +71,7 @@ Matrix(int m, int n, bool globalSizes /* = true */, int nzCount /*= -1*/){
 Matrix::
 Matrix(Matrix const& other){
   if (DecorateCtors) std::cout << "Matrix(Matrix const&)" << std::endl;
-  MatCopy(other.mat_, mat_, SAME_NONZERO_PATTERN);
+  MatDuplicate(other.mat_, MAT_COPY_VALUES, &mat_);
 }
 
 
@@ -79,8 +79,9 @@ Matrix&
 Matrix::
 operator=(Matrix const& other) {
   if (DecorateCtors) std::cout << "operator=(Matrix const&)" << std::endl;
-
-  MatCopy(other.mat_, mat_, SAME_NONZERO_PATTERN);
+  // release existing matrix
+  cleanup();
+  MatDuplicate(other.mat_, MAT_COPY_VALUES, &mat_);
   return *this;
 }
 
@@ -92,7 +93,21 @@ operator=(Matrix && other) {
 
   mat_ = other.mat_;
   other.mat_ = nullptr;
+  // release existing matrix
+  cleanup();
+  // swap the internal mat ptr
+  std::swap(mat_, other.mat_);
   return *this;
+}
+
+
+Matrix::
+Matrix(MatrixScaleOp op)
+  : mat_(nullptr)
+{
+  if (DecorateCtors) std::cout << "Matrix(MatrixScaleOp op) " << std::endl;
+
+  *this = op.eval();
 }
 
 
@@ -100,8 +115,19 @@ Matrix::
 ~Matrix(){
   if (DecorateCtors) std::cout << "~Matrix()" << std::endl;
 
-  if (mat_)
+  cleanup();
+}
+
+
+void
+Matrix::
+cleanup(){
+  if (DecorateCtors) std::cout << "~Matrix()" << std::endl;
+
+  if (mat_){
     MatDestroy(&mat_);
+    mat_ = nullptr;
+  }
 }
 
 
@@ -147,6 +173,16 @@ MatrixElement
 Matrix::
 operator()(int i, int j){
   return MatrixElement(*this, i, j);
+}
+
+
+Matrix&
+Matrix::
+operator*=(double alpha){
+  if (DecorateCtors) std::cout << "op *=(alpha = " << alpha << ") " << std::endl;
+
+  MatScale(mat_, alpha);
+  return *this;
 }
 
 
@@ -318,4 +354,160 @@ MatrixElement::
 operator=(double val){
   MatSetValues(mat_.petscMat(), 1, &m_, 1, &n_, &val, INSERT_VALUES);
   return mat_;
+}
+
+
+// -----------------------------------------------------------------
+
+
+// MatrixProxy&
+// MatrixProxy::
+// operator=(MatrixScaleOp op){
+//   if (mat_.petscMat())
+//     MatDestroy(&(mat_.petscMat()));
+
+//   mat_ = op.eval();
+//   return *this;
+// }
+
+
+
+
+MatrixScaleOp::
+MatrixScaleOp(Matrix& vec, double alpha)
+  : mat_(vec), alpha_(alpha)
+{ }
+
+
+MatrixScaleOp&
+MatrixScaleOp::
+operator*=(double alpha){
+  alpha_ *= alpha;
+  return *this;
+}
+
+
+MatrixScaleOp&
+MatrixScaleOp::
+operator/=(double alpha){
+  alpha_ /= alpha;
+  return *this;
+}
+
+
+Matrix
+MatrixScaleOp::
+eval() const{
+  Matrix mat(mat_);
+  mat *= alpha_;
+  return mat;
+}
+
+
+// Mat&
+// MatrixScaleOp::
+// mat() const{
+//   return mat_.petscMat();
+// }
+
+MatObj
+MatrixScaleOp::
+evalNoScale() const{
+  return MatObj(mat_.petscMat(), false);
+}
+
+
+double
+MatrixScaleOp::
+scaleFactor() const{
+  return alpha_;
+}
+
+
+void
+MatrixScaleOp::
+addTo(Matrix& mat) const{
+  // TODO: what's the best way to specify the matrix structure?
+  MatStructure str = DIFFERENT_NONZERO_PATTERN;
+  // TODO: Potential excessive use of assemble()
+  mat_.assemble();
+  MatAXPY(mat.petscMat(), alpha_, mat_.petscMat(), str);
+}
+
+
+Mat
+MatrixScaleOp::
+duplicateMat(bool copyValues /*= true*/) const{
+  Mat ret;
+  MatDuplicateOption opt = MAT_COPY_VALUES;
+  if (!copyValues){
+    opt = MAT_DO_NOT_COPY_VALUES;
+  }
+  mat_.assemble();
+  MatDuplicate(mat_.petscMat(), opt, &ret);
+  return ret;
+}
+
+
+// Multiply with input vector, _WITHOUT_ scaling
+VecObj
+MatrixScaleOp::
+vecMultiplyNoScale(VecObj const& v) const{
+  Vec ret;
+  VecDuplicate(v.get(), &ret);
+  MatMult(mat_.petscMat(), v.get(), ret);
+  return VecObj(ret,false);
+}
+
+
+// -----------------------------------------------------------------
+
+MatrixScaleOp
+Petscpp::
+operator*(double alpha, Matrix &mat){
+  return MatrixScaleOp(mat, alpha);
+}
+
+
+MatrixScaleOp
+Petscpp::
+operator/(Matrix &mat, double alpha){
+  return MatrixScaleOp(mat, 1.0/alpha);
+}
+
+
+MatrixScaleOp
+Petscpp::
+operator*(Matrix &mat, double alpha){
+  return MatrixScaleOp(mat, alpha);
+}
+
+
+MatrixScaleOp
+Petscpp::
+operator*(MatrixScaleOp s, double alpha){
+  s *= alpha;
+  return s;
+}
+
+
+MatrixScaleOp
+Petscpp::
+operator/(MatrixScaleOp s, double alpha){
+  s /= alpha;
+  return s;
+}
+
+
+MatrixScaleOp
+Petscpp::
+operator*(double alpha, MatrixScaleOp s){
+  s *= alpha;
+  return s;
+}
+
+
+MatrixScaleOp operator/(double alpha, MatrixScaleOp s){
+  s /= alpha;
+  return s;
 }
