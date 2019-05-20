@@ -423,6 +423,8 @@ namespace Petscpp{
      */
     int startingRow() const;
 
+    std::pair<int,int> startingIndex() const;
+
     friend class MatrixSlice;
     // friend class MatrixProxy;
     // friend class MatrixHandler;

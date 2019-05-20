@@ -1,6 +1,7 @@
 #include "Matrix.h"
 #include "Petscpp.h"
 #include "petscmat.h"
+#include <utility>
 #include <iostream>
 
 using namespace Petscpp;
@@ -244,6 +245,19 @@ startingRow() const{
   int start = 0;
   MatGetOwnershipRange(mat_, &start, nullptr);
   return start;
+}
+
+
+std::pair<int,int>
+Matrix::
+startingIndex() const{
+  int row_0 = 0;
+  int row_1 = 0;
+  int col_0 = 0;
+  int col_1 = 0;
+  MatGetOwnershipRange(mat_, &row_0, &row_1);
+  MatGetOwnershipRangeColumn(mat_, &col_0, &col_1);
+  return std::make_pair(row_0, col_0);
 }
 
 
