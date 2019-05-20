@@ -55,7 +55,7 @@ Matrix(int m, int n, bool globalSizes /* = true */, int nzCount /*= -1*/){
 
   if (procCount() > 1)
     MatMPIAIJSetPreallocation(mat_, nz, PETSC_NULL, nz,
-                              PETSC_NULL); 
+                              PETSC_NULL);
   else
     MatSeqAIJSetPreallocation(mat_, nz, PETSC_NULL);
 
@@ -76,9 +76,10 @@ Matrix(Matrix const& other){
 }
 
 
-Matrix& 
+Matrix&
 Matrix::
-operator=(Matrix const& other) {
+operator=(Matrix const& other)
+{
   if (DecorateCtors) std::cout << "operator=(Matrix const&)" << std::endl;
   // release existing matrix
   cleanup();
@@ -89,11 +90,9 @@ operator=(Matrix const& other) {
 
 Matrix&
 Matrix::
-operator=(Matrix && other) {
+operator=(Matrix && other)
+{
   if (DecorateCtors) std::cout << "operator=(Matrix &&)" << std::endl;
-
-  mat_ = other.mat_;
-  other.mat_ = nullptr;
   // release existing matrix
   cleanup();
   // swap the internal mat ptr
@@ -132,7 +131,7 @@ cleanup(){
 }
 
 
-void 
+void
 Matrix::
 setSize(int m, int n){
   MatSetSizes(mat_, PETSC_DECIDE, PETSC_DECIDE, m,n);
@@ -335,13 +334,12 @@ toMatrix() const{
   Eigen::MatrixXd matrix(rowIndices_.size(), colIndices_.size());
 
   MatGetValues(petscMatrix(),
-               // rowIndices_.size(), rowIndices_.begin(),
-               // colIndices_.size(), colIndices_.begin(),
                rowIndices_.size(), &rowIndices_[0],
                colIndices_.size(), &colIndices_[0],
                &matrix.data()[0]);
 
-  return matrix;
+  // TODO: Handle row/col-major
+  return matrix.transpose();
 }
 
 

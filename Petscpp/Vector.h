@@ -448,7 +448,6 @@ namespace Petscpp{
           --(*count_);
           if ( *count_ == 0){
             VecRestoreArray(vec_, &data_);
-            // std::cout << "restoring" << std::endl;
           }
         }
       }

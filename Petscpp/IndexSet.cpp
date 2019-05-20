@@ -138,7 +138,7 @@ partitionCount() const{
 IndexSet
 Petscpp::
 partitionToNumbering(IndexSet const& is){
-  IS numbering; 
+  IS numbering;
   ISPartitioningToNumbering(is.is_, &numbering);
   return IndexSet(numbering);
 }

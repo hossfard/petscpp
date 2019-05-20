@@ -11,6 +11,7 @@
 struct _p_Mat;
 typedef struct _p_Mat* Mat;
 
+
 namespace Petscpp{
 
   class Matrix;
@@ -24,7 +25,7 @@ namespace Petscpp{
       : matrix_(matrix), rowIndices_(rowIndices), colIndices_(colIndices)
     { }
     // TODO: Remove redundant entries from specified indicies
-    
+
     template <size_t M, size_t N>
     MatrixSlice(Matrix &matrix,
                 std::array<int,M> const& rowIndices,
@@ -312,6 +313,7 @@ namespace Petscpp{
     Matrix(int M, int N, bool globalSizes = true, int nzCount = -1);
 
     Matrix(MatrixScaleOp op);
+
     Matrix& operator=(Matrix const& other);
     Matrix& operator=(Matrix && other);
 
@@ -392,6 +394,7 @@ namespace Petscpp{
      */
     std::pair<int,int> localSize() const;
 
+
     /*! local row count
      *
      * This is a convenience function
@@ -426,8 +429,8 @@ namespace Petscpp{
     std::pair<int,int> startingIndex() const;
 
     friend class MatrixSlice;
+
     // friend class MatrixProxy;
-    // friend class MatrixHandler;
 
     // Returns the underlying Petsc matrix
     Mat& petscMat();
